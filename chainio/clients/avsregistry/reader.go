@@ -6,16 +6,13 @@ import (
 	"math/big"
 
 	"github.com/Layr-Labs/eigensdk-go/chainio/clients/eth"
-	"github.com/Layr-Labs/eigensdk-go/crypto/bls"
 	"github.com/Layr-Labs/eigensdk-go/logging"
 	"github.com/Layr-Labs/eigensdk-go/types"
 	"github.com/Layr-Labs/eigensdk-go/utils"
-	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 
-	apkreg "github.com/Layr-Labs/eigensdk-go/contracts/bindings/BLSApkRegistry"
 	opstateretriever "github.com/Layr-Labs/eigensdk-go/contracts/bindings/OperatorStateRetriever"
 	regcoord "github.com/Layr-Labs/eigensdk-go/contracts/bindings/RegistryCoordinator"
 	stakeregistry "github.com/Layr-Labs/eigensdk-go/contracts/bindings/StakeRegistry"
@@ -369,10 +366,10 @@ func (r *AvsRegistryChainReader) QueryExistingRegisteredOperatorPubKeys(
 	startBlock *big.Int,
 	stopBlock *big.Int,
 ) ([]types.OperatorAddr, []types.OperatorPubkeys, error) {
-	blsApkRegistryAbi, err := apkreg.ContractBLSApkRegistryMetaData.GetAbi()
-	if err != nil {
-		return nil, nil, utils.WrapError("Cannot get Abi", err)
-	}
+	//blsApkRegistryAbi, err := apkreg.ContractBLSApkRegistryMetaData.GetAbi()
+	//if err != nil {
+	//	return nil, nil, utils.WrapError("Cannot get Abi", err)
+	//}
 
 	if startBlock == nil {
 		startBlock = big.NewInt(0)
@@ -389,69 +386,69 @@ func (r *AvsRegistryChainReader) QueryExistingRegisteredOperatorPubKeys(
 
 	operatorAddresses := make([]types.OperatorAddr, 0)
 	operatorPubkeys := make([]types.OperatorPubkeys, 0)
-	for i := startBlock; i.Cmp(stopBlock) <= 0; i.Add(i, big.NewInt(QueryBlockRange)) {
-		// Subtract 1 since FilterQuery is inclusive
-		toBlock := big.NewInt(0).Add(i, big.NewInt(QueryBlockRange-1))
-		if toBlock.Cmp(stopBlock) > 0 {
-			toBlock = stopBlock
-		}
-		query := ethereum.FilterQuery{
-			FromBlock: i,
-			ToBlock:   toBlock,
-			Addresses: []gethcommon.Address{
-				r.blsApkRegistryAddr,
-			},
-			Topics: [][]gethcommon.Hash{{blsApkRegistryAbi.Events["NewPubkeyRegistration"].ID}},
-		}
-
-		logs, err := r.ethClient.FilterLogs(ctx, query)
-		if err != nil {
-			return nil, nil, utils.WrapError("Cannot filter logs", err)
-		}
-		r.logger.Debug(
-			"avsRegistryChainReader.QueryExistingRegisteredOperatorPubKeys",
-			"numTransactionLogs",
-			len(logs),
-			"fromBlock",
-			i,
-			"toBlock",
-			toBlock,
-		)
-
-		for _, vLog := range logs {
-			// get the operator address
-			operatorAddr := gethcommon.HexToAddress(vLog.Topics[1].Hex())
-			operatorAddresses = append(operatorAddresses, operatorAddr)
-
-			event, err := blsApkRegistryAbi.Unpack("NewPubkeyRegistration", vLog.Data)
-			if err != nil {
-				return nil, nil, utils.WrapError("Cannot unpack event data", err)
-			}
-
-			G1Pubkey := event[0].(struct {
-				X *big.Int "json:\"X\""
-				Y *big.Int "json:\"Y\""
-			})
-
-			G2Pubkey := event[1].(struct {
-				X [2]*big.Int "json:\"X\""
-				Y [2]*big.Int "json:\"Y\""
-			})
-
-			operatorPubkey := types.OperatorPubkeys{
-				G1Pubkey: bls.NewG1Point(
-					G1Pubkey.X,
-					G1Pubkey.Y,
-				),
-				G2Pubkey: bls.NewG2Point(
-					G2Pubkey.X,
-					G2Pubkey.Y,
-				),
-			}
-
-			operatorPubkeys = append(operatorPubkeys, operatorPubkey)
-		}
-	}
+	//for i := startBlock; i.Cmp(stopBlock) <= 0; i.Add(i, big.NewInt(QueryBlockRange)) {
+	//	// Subtract 1 since FilterQuery is inclusive
+	//	toBlock := big.NewInt(0).Add(i, big.NewInt(QueryBlockRange-1))
+	//	if toBlock.Cmp(stopBlock) > 0 {
+	//		toBlock = stopBlock
+	//	}
+	//	query := ethereum.FilterQuery{
+	//		FromBlock: i,
+	//		ToBlock:   toBlock,
+	//		Addresses: []gethcommon.Address{
+	//			r.blsApkRegistryAddr,
+	//		},
+	//		Topics: [][]gethcommon.Hash{{blsApkRegistryAbi.Events["NewPubkeyRegistration"].ID}},
+	//	}
+	//
+	//	logs, err := r.ethClient.FilterLogs(ctx, query)
+	//	if err != nil {
+	//		return nil, nil, utils.WrapError("Cannot filter logs", err)
+	//	}
+	//	r.logger.Debug(
+	//		"avsRegistryChainReader.QueryExistingRegisteredOperatorPubKeys",
+	//		"numTransactionLogs",
+	//		len(logs),
+	//		"fromBlock",
+	//		i,
+	//		"toBlock",
+	//		toBlock,
+	//	)
+	//
+	//	for _, vLog := range logs {
+	//		// get the operator address
+	//		operatorAddr := gethcommon.HexToAddress(vLog.Topics[1].Hex())
+	//		operatorAddresses = append(operatorAddresses, operatorAddr)
+	//
+	//		event, err := blsApkRegistryAbi.Unpack("NewPubkeyRegistration", vLog.Data)
+	//		if err != nil {
+	//			return nil, nil, utils.WrapError("Cannot unpack event data", err)
+	//		}
+	//
+	//		G1Pubkey := event[0].(struct {
+	//			X *big.Int "json:\"X\""
+	//			Y *big.Int "json:\"Y\""
+	//		})
+	//
+	//		G2Pubkey := event[1].(struct {
+	//			X [2]*big.Int "json:\"X\""
+	//			Y [2]*big.Int "json:\"Y\""
+	//		})
+	//
+	//		operatorPubkey := types.OperatorPubkeys{
+	//			G1Pubkey: bls.NewG1Point(
+	//				G1Pubkey.X,
+	//				G1Pubkey.Y,
+	//			),
+	//			G2Pubkey: bls.NewG2Point(
+	//				G2Pubkey.X,
+	//				G2Pubkey.Y,
+	//			),
+	//		}
+	//
+	//		operatorPubkeys = append(operatorPubkeys, operatorPubkey)
+	//	}
+	//}
 
 	return operatorAddresses, operatorPubkeys, nil
 }

@@ -1,4 +1,4 @@
-module github.com/kryon-network/eigensdk-go
+module github.com/Layr-Labs/eigensdk-go
 
 go 1.21
 
