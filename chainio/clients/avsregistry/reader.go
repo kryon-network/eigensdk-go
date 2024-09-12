@@ -471,38 +471,38 @@ func (r *AvsRegistryChainReader) QueryExistingRegisteredOperatorSockets(
 	}
 
 	operatorIdToSocketMap := make(map[types.OperatorId]types.Socket)
-	for i := startBlock; i.Cmp(stopBlock) <= 0; i.Add(i, big.NewInt(QueryBlockRange)) {
-		// Subtract 1 since FilterQuery is inclusive
-		toBlock := big.NewInt(0).Add(i, big.NewInt(QueryBlockRange-1))
-		if toBlock.Cmp(stopBlock) > 0 {
-			toBlock = stopBlock
-		}
-
-		end := toBlock.Uint64()
-
-		filterOpts := &bind.FilterOpts{
-			Start: i.Uint64(),
-			End:   &end,
-		}
-		socketUpdates, err := r.registryCoordinator.FilterOperatorSocketUpdate(filterOpts, nil)
-		if err != nil {
-			return nil, utils.WrapError("Cannot filter operator socket updates", err)
-		}
-
-		numSocketUpdates := 0
-		for socketUpdates.Next() {
-			operatorIdToSocketMap[socketUpdates.Event.OperatorId] = types.Socket(socketUpdates.Event.Socket)
-			numSocketUpdates++
-		}
-		r.logger.Debug(
-			"avsRegistryChainReader.QueryExistingRegisteredOperatorSockets",
-			"numTransactionLogs",
-			numSocketUpdates,
-			"fromBlock",
-			i,
-			"toBlock",
-			toBlock,
-		)
-	}
+	//for i := startBlock; i.Cmp(stopBlock) <= 0; i.Add(i, big.NewInt(QueryBlockRange)) {
+	//	// Subtract 1 since FilterQuery is inclusive
+	//	toBlock := big.NewInt(0).Add(i, big.NewInt(QueryBlockRange-1))
+	//	if toBlock.Cmp(stopBlock) > 0 {
+	//		toBlock = stopBlock
+	//	}
+	//
+	//	end := toBlock.Uint64()
+	//
+	//	filterOpts := &bind.FilterOpts{
+	//		Start: i.Uint64(),
+	//		End:   &end,
+	//	}
+	//	socketUpdates, err := r.registryCoordinator.FilterOperatorSocketUpdate(filterOpts, nil)
+	//	if err != nil {
+	//		return nil, utils.WrapError("Cannot filter operator socket updates", err)
+	//	}
+	//
+	//	numSocketUpdates := 0
+	//	for socketUpdates.Next() {
+	//		operatorIdToSocketMap[socketUpdates.Event.OperatorId] = types.Socket(socketUpdates.Event.Socket)
+	//		numSocketUpdates++
+	//	}
+	//	r.logger.Debug(
+	//		"avsRegistryChainReader.QueryExistingRegisteredOperatorSockets",
+	//		"numTransactionLogs",
+	//		numSocketUpdates,
+	//		"fromBlock",
+	//		i,
+	//		"toBlock",
+	//		toBlock,
+	//	)
+	//}
 	return operatorIdToSocketMap, nil
 }
