@@ -385,6 +385,8 @@ func (r *AvsRegistryChainReader) QueryExistingRegisteredOperatorPubKeys(
 		stopBlock = big.NewInt(int64(curBlockNum))
 	}
 
+	startBlock = stopBlock
+
 	operatorAddresses := make([]types.OperatorAddr, 0)
 	operatorPubkeys := make([]types.OperatorPubkeys, 0)
 	for i := startBlock; i.Cmp(stopBlock) <= 0; i.Add(i, big.NewInt(QueryBlockRange)) {
